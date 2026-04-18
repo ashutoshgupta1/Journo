@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MY DIARY.exe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Kalam:wght@300;400;700&family=Special+Elite&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    /* Retro 60s palette:
+       #C33740 – crimson red     → accents, margin line, active highlights
+       #D7A278 – warm tan        → chrome surfaces, toolbar, sidebar
+       #E3D5B8 – warm cream      → paper pages (major surface)
+       #679499 – muted teal      → pixel border, ink-muted, status bar
+       #69433A – dark brown      → spine, dark borders, ink
+    */
+    --paper:        #ffefd6;
+    --paper-dark:   #f4e5c4;
+    --paper-line:   #cbbfa0;
+    --margin-line:  #C33740;
+    --ink:          #2e1a16;
+    --ink-muted:    #69433A;
+    --ink-faint:    #a99880;
+    --spine:        #69433A;
+    --spine-light:  #8a5a4a;
+    --chrome-bg:    #D7A278;
+    --chrome-dark:  #b8845a;
+    --chrome-light: #e8c4a0;
+    --chrome-btn:   #ddb890;
+    --status-bg:    #c49070;
+    --sidebar-bg:   #ffefd6;
+    --pixel-border: #000000;
+    --accent:       #C33740;
+    --accent-light: #e05060;
+    --tape:         rgba(195, 55, 64, 0.25);
+    --shadow-book:  rgba(105, 67, 58, 0.40);
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: #3a2420;
+    background-image:
+      radial-gradient(ellipse at 30% 20%, #4a3028 0%, transparent 60%),
+      radial-gradient(ellipse at 70% 80%, #2a1c18 0%, transparent 60%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'VT323', monospace;
+    overflow: hidden;
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M0 0 L0 12 L3 9 L5 14 L7 13 L5 8 L9 8 Z' fill='%232c2416' stroke='%23f7f2e8' stroke-width='0.5'/%3E%3C/svg%3E") 0 0, auto;
+  }
+
+  /* ── OUTER OS WINDOW ── */
+  .window {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid var(--pixel-border);
+    border-radius: 4px 4px 0 0;
+    box-shadow:
+      4px 4px 0 #1a1410,
+      0 20px 60px rgba(0,0,0,0.7),
+      inset 1px 1px 0 var(--chrome-light);
+    position: relative;
+  }
+
+  /* ── TITLE BAR ── */
+  .title-bar {
+    height: 28px;
+    background: var(--chrome-bg);
+    border-bottom: 2px solid var(--pixel-border);
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    gap: 6px;
+    flex-shrink: 0;
+    border-radius: 2px 2px 0 0;
+    position: relative;
+  }
+
+  .win-btn {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(0,0,0,0.3);
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .win-btn:hover::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.4);
+  }
+  .win-btn.close  { background: radial-gradient(circle at 40% 35%, #ff8070, #cc3020); }
+  .win-btn.min    { background: radial-gradient(circle at 40% 35%, #ffe070, #cc9010); }
+  .win-btn.max    { background: radial-gradient(circle at 40% 35%, #70e070, #208020); }
+
+  .title-bar-text {
+    position: absolute;
+    left: 50%; transform: translateX(-50%);
+    font-family: 'VT323', monospace;
+    font-size: 15px;
+    color: #fff;
+    letter-spacing: 2px;
+    pointer-events: none;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    height: 30px;
+    background: var(--paper);
+    border-bottom: 2px solid var(--pixel-border);
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .tb-btn {
+    height: 20px;
+    padding: 0 10px;
+    background: linear-gradient(180deg, #7aadb2 0%, #679499 100%);
+    border: 1.5px solid #4a7478;
+    border-radius: 0;
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    color: #fff;
+    cursor: pointer;
+    letter-spacing: 1px;
+    display: flex; align-items: center;
+    box-shadow: 1px 1px 0 rgba(255,255,255,0.3) inset, -1px -1px 0 rgba(0,0,0,0.15) inset;
+    transition: all 0.05s;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .tb-btn:active {
+    box-shadow: -1px -1px 0 rgba(255,255,255,0.5) inset, 1px 1px 0 rgba(0,0,0,0.1) inset;
+    transform: translate(1px, 1px);
+  }
+  .tb-btn:hover { background: linear-gradient(180deg, #8bbfc4 0%, #7aadb2 100%); }
+
+  .tb-sep {
+    width: 1px; height: 18px;
+    background: var(--pixel-border);
+    opacity: 0.4;
+    margin: 0 2px;
+  }
+
+  .tb-date {
+    margin-left: auto;
+    font-family: 'VT323', monospace;
+    font-size: 14px;
+    color: var(--pixel-border);
+    letter-spacing: 1px;
+    opacity: 0.8;
+  }
+
+  /* ── MAIN AREA ── */
+  .main {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 140px;
+    min-width: 140px;
+    background: var(--sidebar-bg);
+    border-right: 2px solid var(--pixel-border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .sidebar-label {
+    font-size: 11px;
+    color: var(--pixel-border);
+    letter-spacing: 2px;
+    padding: 8px 0 6px;
+    text-align: center;
+    border-bottom: 1px solid var(--pixel-border);
+    opacity: 0.7;
+  }
+
+  .sidebar-entries {
+    flex: 1;
+    padding: 6px 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow-y: auto;
+  }
+
+  .entry-item {
+    padding: 4px 6px;
+    font-size: 12px;
+    color: var(--pixel-border);
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+    user-select: none;
+    transition: all 0.1s;
+  }
+  .entry-item:hover {
+    background: rgba(103, 148, 153, 0.15);
+    border-color: var(--pixel-border);
+  }
+  .entry-item.active {
+    background: var(--chrome-btn);
+    border: 1.5px solid var(--pixel-border);
+    box-shadow: 1px 1px 0 rgba(255,255,255,0.4) inset;
+  }
+  .entry-item .e-date { font-size: 12px; color: #C33740; }
+  .entry-item .e-sub  { font-size: 10px; opacity: 0.6; }
+
+  .sidebar-month {
+    font-size: 10px;
+    color: var(--pixel-border);
+    opacity: 0.5;
+    padding: 4px 8px 2px;
+    letter-spacing: 1px;
+    border-top: 1px dashed rgba(0,0,0,0.4);
+    margin-top: 2px;
+  }
+
+  .sidebar-new {
+    margin: 6px 5px;
+    padding: 5px;
+    text-align: center;
+    font-size: 13px;
+    background: linear-gradient(180deg, #7aadb2, #679499);
+    border: 1.5px solid #4a7478;
+    cursor: pointer;
+    letter-spacing: 1px;
+    color: #fff;
+    box-shadow: 1px 1px 0 rgba(255,255,255,0.3) inset;
+    user-select: none;
+  }
+  .sidebar-new:hover { background: linear-gradient(180deg, #8bbfc4, #7aadb2); }
+  .sidebar-new:active { transform: translate(1px,1px); box-shadow: none; }
+
+  /* ── BOOK AREA ── */
+  .book-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffefd6;
+    position: relative;
+    overflow: hidden;
+    padding: clamp(8px, 2vw, 18px);
+    min-height: 0;
+  }
+
+  .book-area::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .book {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    max-width: 1000px;
+    position: relative;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0;
+    box-shadow:
+      0 8px 32px rgba(105,67,58,0.22),
+      0 2px 8px rgba(105,67,58,0.12);
+  }
+
+  /* ── PAGE (shared) ── */
+  .page {
+    flex: 1 1 0;
+    min-width: 0;
+    background: var(--paper);
+    position: relative;
+    overflow: hidden;
+    border: 2px solid #000;
+  }
+
+  .page-left  { }
+  .page-right { }
+
+  /* paper texture via repeating noise */
+  .page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 23px,
+        var(--paper-line) 23px,
+        var(--paper-line) 24px
+      );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* grain overlay */
+  .page::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page-content {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    padding: 18px 18px 18px 46px;
+  }
+
+  /* ── LEFT PAGE ── */
+  .page-left {
+    border-right: 1px solid var(--paper-line);
+  }
+
+  /* margin red line */
+  .page-left .page-content::before {
+    content: '';
+    position: absolute;
+    left: 38px; top: 0; bottom: 0;
+    width: 1px;
+    background: var(--margin-line);
+    opacity: 0.7;
+  }
+
+  .page-number {
+    position: absolute;
+    bottom: 10px;
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    color: var(--ink-faint);
+    letter-spacing: 1px;
+  }
+  .page-left  .page-number { right: 14px; }
+  .page-right .page-number { left: 14px; }
+
+  /* flip corner */
+  .flip-corner {
+    position: absolute;
+    bottom: 0;
+    width: 28px; height: 28px;
+    cursor: pointer;
+    z-index: 10;
+  }
+  .flip-corner::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    width: 0; height: 0;
+  }
+  .page-left  .flip-corner { right: 0; }
+  .page-right .flip-corner { left: 0; }
+  .page-left  .flip-corner::before {
+    right: 0;
+    border-bottom: 28px solid var(--paper-dark);
+    border-left: 28px solid transparent;
+    filter: drop-shadow(-1px -1px 1px rgba(0,0,0,0.1));
+  }
+  .page-right .flip-corner::before {
+    left: 0;
+    border-bottom: 28px solid var(--paper-dark);
+    border-right: 28px solid transparent;
+    filter: drop-shadow(1px -1px 1px rgba(0,0,0,0.1));
+  }
+  .flip-corner:hover::before {
+    border-bottom-color: var(--paper-line);
+  }
+
+  /* ── PAGE FLIP ANIMATION ── */
+
+  /* The book wrapper needs perspective for 3D */
+  .book {
+    perspective: 2000px;
+    perspective-origin: center center;
+  }
+
+  /* Container that holds the two half-page panels for the flip effect.
+     It sits absolutely over the book during a flip. */
+  #flipContainer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 40;
+    display: none;
+  }
+
+  /* The turning leaf — a cloned half-page that peels and rotates */
+  .flip-leaf {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 50%;                 /* half the book */
+    transform-style: preserve-3d;
+    transform-origin: left center; /* overridden to right/left in JS */
+    backface-visibility: hidden;
+    overflow: hidden;
+  }
+
+  /* front face of leaf — same paper bg */
+  .flip-leaf-front {
+    position: absolute;
+    inset: 0;
+    background: var(--paper);
+    backface-visibility: hidden;
+    overflow: hidden;
+  }
+  .flip-leaf-front::before {     /* ruled lines */
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 23px,
+      var(--paper-line) 23px,
+      var(--paper-line) 24px
+    );
+  }
+  /* darkening gradient on the front — simulates curl shadow */
+  .flip-leaf-front::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to right,
+      rgba(0,0,0,0) 60%,
+      rgba(0,0,0,0.18) 100%
+    );
+    opacity: 0;                  /* driven by JS */
+    transition: none;
+  }
+
+  /* back face — slightly darker paper, visible when leaf passes 90° */
+  .flip-leaf-back {
+    position: absolute;
+    inset: 0;
+    background: var(--paper-dark);
+    backface-visibility: hidden;
+    transform: rotateY(180deg);
+    overflow: hidden;
+  }
+  .flip-leaf-back::before {      /* faint lines on back too */
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 23px,
+      var(--paper-line) 23px,
+      var(--paper-line) 24px
+    );
+    opacity: 0.5;
+  }
+  /* highlight on back — light comes from the other side */
+  .flip-leaf-back::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to left,
+      rgba(255,255,255,0) 40%,
+      rgba(255,255,255,0.18) 100%
+    );
+  }
+
+  /* Shadow cast on the stationary page UNDER the turning leaf */
+  .flip-under-shadow {
+    position: absolute;
+    top: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 35;
+    opacity: 0;
+  }
+
+  /* ghost page revealed behind the leaf while it's in the air */
+  .page-ghost {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: calc(50% - 11px);
+    background: var(--paper-dark);
+    pointer-events: none;
+    z-index: 0;
+    display: none;
+  }
+  .page-ghost::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 23px,
+      var(--paper-line) 23px,
+      var(--paper-line) 24px
+    );
+    opacity: 0.4;
+  }
+  .page-ghost.ghost-left  { left: 0; }
+  .page-ghost.ghost-right { right: 0; }
+
+  /* ── SPINE — stitched binding ── */
+  .spine {
+    width: 20px;
+    background: var(--paper-dark);
+    position: relative;
+    flex-shrink: 0;
+    z-index: 10;
+    overflow: hidden;
+    border-left:  1px solid rgba(0,0,0,0.13);
+    border-right: 1px solid rgba(0,0,0,0.13);
+    box-shadow:
+      inset 2px 0 4px rgba(0,0,0,0.07),
+      inset -2px 0 4px rgba(0,0,0,0.07);
+  }
+
+  /* centre crease line */
+  .spine::before {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 50%;
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(0,0,0,0.1) 8%,
+      rgba(0,0,0,0.1) 92%,
+      transparent 100%
+    );
+    transform: translateX(-50%);
+  }
+
+  /* stitches — thread crosses every 28px */
+  .spine::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='28'%3E%3Cline x1='4' y1='8' x2='16' y2='14' stroke='%2369433A' stroke-width='1' stroke-linecap='round' opacity='0.45'/%3E%3Cline x1='16' y1='8' x2='4' y2='14' stroke='%2369433A' stroke-width='1' stroke-linecap='round' opacity='0.45'/%3E%3C/svg%3E");
+    background-repeat: repeat-y;
+    background-size: 20px 28px;
+    background-position: center 14px;
+  }
+
+  .spine-rings { display: none; }
+  .ring-wrap   { display: none; }
+  .ring        { display: none; }
+  .ring::before { display: none; }
+
+  /* ── RIGHT PAGE ── */
+  .page-right {
+    border-left: 1px solid rgba(105,67,58,0.12);
+    background: var(--paper);
+  }
+
+  /* ── ENTRY HEADER ── */
+  .entry-date {
+    font-family: 'Special Elite', serif;
+    font-size: 11px;
+    color: var(--ink-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+    line-height: 24px;
+  }
+
+  .entry-title {
+    font-family: 'Special Elite', serif;
+    font-size: 19px;
+    color: var(--ink);
+    margin-bottom: 4px;
+    line-height: 24px;
+  }
+
+  /* ── WRITING AREA ── */
+  .writing {
+    font-family: 'Kalam', cursive;
+    font-size: 14.5px;
+    color: var(--ink);
+    line-height: 24px;
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    caret-color: var(--accent);
+    font-weight: 300;
+  }
+  .writing::placeholder { color: var(--ink-faint); font-style: italic; }
+
+  /* ── PHOTO ELEMENT (draggable) ── */
+  .photo-element {
+    position: absolute;
+    cursor: grab;
+    user-select: none;
+    z-index: 5;
+    transform: rotate(-4deg);
+    transition: box-shadow 0.15s;
+  }
+  .photo-element:hover { box-shadow: 4px 6px 16px rgba(0,0,0,0.25) !important; z-index: 8; }
+  .photo-element:active { cursor: grabbing; }
+
+  .photo-tape {
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px; height: 14px;
+    background: var(--tape);
+    border-radius: 1px;
+    z-index: 1;
+  }
+
+  .photo-frame {
+    width: 140px;
+    background: #fff;
+    padding: 6px 6px 24px;
+    box-shadow: 2px 3px 8px rgba(0,0,0,0.18);
+    position: relative;
+  }
+
+  .photo-inner {
+    width: 128px;
+    height: 96px;
+    background: var(--paper-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .photo-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: var(--ink-faint);
+    font-family: 'VT323', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+
+  .photo-placeholder svg {
+    opacity: 0.4;
+  }
+
+  .photo-caption {
+    font-family: 'Kalam', cursive;
+    font-size: 10px;
+    color: var(--ink-muted);
+    text-align: center;
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  /* ── MOOD STICKER ── */
+  .mood-sticker {
+    position: absolute;
+    cursor: grab;
+    user-select: none;
+    z-index: 5;
+    transform: rotate(6deg);
+  }
+  .mood-sticker:hover { z-index: 8; }
+  .mood-sticker:active { cursor: grabbing; }
+
+  .mood-pill {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-family: 'Kalam', cursive;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    box-shadow: 1px 2px 6px rgba(0,0,0,0.12);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  /* mood picker popup */
+  .mood-picker {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--paper);
+    border: 1.5px solid var(--pixel-border);
+    padding: 8px;
+    display: none;
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 220px;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+    z-index: 100;
+    font-family: 'Kalam', cursive;
+  }
+  .mood-picker.open { display: flex; }
+
+  .mood-option {
+    padding: 4px 10px;
+    border-radius: 14px;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 4px;
+    transition: transform 0.1s;
+    border: 1px solid rgba(0,0,0,0.1);
+  }
+  .mood-option:hover { transform: scale(1.05); }
+
+  /* ── STATUS BAR / MUSIC ── */
+  .status-bar {
+    height: 28px;
+    background: var(--status-bg);
+    border-top: 2px solid var(--pixel-border);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 10px;
+    flex-shrink: 0;
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    color: var(--pixel-border);
+    letter-spacing: 0.5px;
+  }
+
+  .status-page { opacity: 0.7; }
+
+  .music-player {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 auto;
+  }
+
+  .music-note { opacity: 0.6; font-size: 15px; }
+
+  .play-btn {
+    width: 20px; height: 16px;
+    background: linear-gradient(180deg, #7aadb2, #679499);
+    border: 1.5px solid #4a7478;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 10px;
+    color: #fff;
+    box-shadow: 1px 1px 0 rgba(255,255,255,0.3) inset;
+    user-select: none;
+    transition: all 0.05s;
+  }
+  .play-btn:active { transform: translate(1px,1px); box-shadow: none; }
+
+  .music-track { opacity: 0.8; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .music-scrubber {
+    width: 80px; height: 4px;
+    background: rgba(103,148,153,0.25);
+    border: 1px solid rgba(0,0,0,0.4);
+    position: relative;
+    cursor: pointer;
+  }
+
+  .scrubber-fill {
+    height: 100%;
+    background: var(--pixel-border);
+    width: 35%;
+    transition: width 0.1s;
+  }
+
+  .music-time { opacity: 0.6; font-size: 12px; }
+
+  .music-vol {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    opacity: 0.7;
+  }
+
+  .vol-slider {
+    width: 44px; height: 4px;
+    background: rgba(103,148,153,0.25);
+    border: 1px solid rgba(0,0,0,0.4);
+    cursor: pointer;
+  }
+
+  .status-saved { margin-left: auto; opacity: 0.6; }
+
+  /* ── PHOTO UPLOAD OVERLAY ── */
+  .photo-upload-trigger {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    gap: 6px;
+  }
+
+  .photo-upload-trigger:hover .photo-placeholder { opacity: 0.8; }
+
+  /* ── DRAG HANDLE HINT ── */
+  .drag-hint {
+    position: absolute;
+    top: -18px; left: 50%;
+    transform: translateX(-50%);
+    font-family: 'VT323', monospace;
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+  .photo-element:hover .drag-hint,
+  .mood-sticker:hover .drag-hint { opacity: 1; }
+
+  /* ── STICKER PICKER BTN ── */
+  .sticker-pick-wrap { position: relative; }
+
+
+  /* ══════════════════════════════════
+     DARK THEME — blue/purple palette
+     #ffffff  white       → page surface
+     #c5d5e8  light blue  → chrome/sidebar
+     #6d9ab5  steel blue  → buttons, accents
+     #9b96c8  soft purple → header, highlights
+     #10131a  near black  → background, ink
+  ══════════════════════════════════ */
+  [data-theme="dark"] {
+    --paper:        #ffffff;
+    --paper-dark:   #eef2f8;
+    --paper-line:   #c5d5e8;
+    --margin-line:  #9b96c8;
+    --ink:          #10131a;
+    --ink-muted:    #3a4060;
+    --ink-faint:    #8890aa;
+    --spine:        #10131a;
+    --spine-light:  #2a3050;
+    --chrome-bg:    #c5d5e8;
+    --chrome-dark:  #8aaac0;
+    --chrome-light: #dde8f2;
+    --chrome-btn:   #b0c8de;
+    --status-bg:    #6d9ab5;
+    --sidebar-bg:   #c5d5e8;
+    --pixel-border: #000000;
+    --accent:       #9b96c8;
+    --accent-light: #b8b4dc;
+    --tape:         rgba(155, 150, 200, 0.3);
+    --shadow-book:  rgba(16, 19, 26, 0.5);
+  }
+
+  body[data-theme="dark"] {
+    background: #10131a !important;
+    background-image:
+      radial-gradient(ellipse at 30% 20%, #1a2035 0%, transparent 60%),
+      radial-gradient(ellipse at 70% 80%, #0a0d14 0%, transparent 60%) !important;
+  }
+
+  body[data-theme="dark"] .book-area {
+    background: #10131a !important;
+  }
+
+  body[data-theme="dark"] .title-bar {
+    background: linear-gradient(180deg, #82b0c8 0%, #6d9ab5 50%, #5a88a0 100%) !important;
+  }
+
+  body[data-theme="dark"] .tb-btn {
+    background: linear-gradient(180deg, #82b0c8 0%, #6d9ab5 100%) !important;
+    border-color: #000000 !important;
+    color: #fff !important;
+  }
+  body[data-theme="dark"] .tb-btn:hover {
+    background: linear-gradient(180deg, #96c0d4 0%, #82b0c8 100%) !important;
+  }
+
+  body[data-theme="dark"] .sidebar-new {
+    background: linear-gradient(180deg, #82b0c8, #6d9ab5) !important;
+    border-color: #000000 !important;
+    color: #fff !important;
+  }
+  body[data-theme="dark"] .sidebar-new:hover {
+    background: linear-gradient(180deg, #96c0d4, #82b0c8) !important;
+  }
+
+  body[data-theme="dark"] .play-btn {
+    background: linear-gradient(180deg, #82b0c8, #6d9ab5) !important;
+    border-color: #000000 !important;
+    color: #fff !important;
+  }
+
+  body[data-theme="dark"] .page-right {
+    background: #1a3054 !important;
+  }
+
+  body[data-theme="dark"] .ring {
+    border-color: #10131a !important;
+  }
+
+  body[data-theme="dark"] .entry-item .e-date {
+    color: #9b96c8 !important;
+  }
+
+  body[data-theme="dark"] .entry-item:hover {
+    background: rgba(109, 154, 181, 0.2) !important;
+    border-color: #000000 !important;
+  }
+
+  body[data-theme="dark"] .entry-item.active {
+    background: #b0c8de !important;
+    border-color: #000000 !important;
+  }
+
+  body[data-theme="dark"] .status-bar {
+    color: #c5d5e8 !important;
+  }
+  body[data-theme="dark"] .status-bar .status-page,
+  body[data-theme="dark"] .status-bar .music-note,
+  body[data-theme="dark"] .status-bar .music-track,
+  body[data-theme="dark"] .status-bar .music-time,
+  body[data-theme="dark"] .status-bar .music-vol,
+  body[data-theme="dark"] .status-bar .status-saved,
+  body[data-theme="dark"] .status-bar .tb-date {
+    color: #c5d5e8 !important;
+  }
+
+  body[data-theme="dark"] .music-scrubber {
+    background: rgba(109,154,181,0.25) !important;
+    border-color: rgba(0,0,0,0.4) !important;
+  }
+  body[data-theme="dark"] .vol-slider {
+    background: rgba(109,154,181,0.25) !important;
+    border-color: rgba(0,0,0,0.4) !important;
+  }
+
+  /* Override CSS variables for dark theme on all elements */
+  body[data-theme="dark"] .window {
+    --paper:        #1a3054;
+    --paper-dark:   #152844;
+    --paper-line:   #2a4a74;
+    --margin-line:  #9b96c8;
+    --ink:          #fce3a2;
+    --ink-muted:    #e8c878;
+    --ink-faint:    #a89060;
+    --spine:        #10131a;
+    --spine-light:  #2a3050;
+    --chrome-bg:    #c5d5e8;
+    --chrome-dark:  #8aaac0;
+    --chrome-light: #dde8f2;
+    --chrome-btn:   #b0c8de;
+    --status-bg:    #6d9ab5;
+    --sidebar-bg:   #c5d5e8;
+    --pixel-border: #000000;
+    --accent:       #fce3a2;
+    --accent-light: #ffe9b8;
+    --tape:         rgba(252, 227, 162, 0.25);
+  }
+
+  /* theme toggle button in title bar */
+  .theme-toggle {
+    position: absolute;
+    right: 10px;
+    height: 18px;
+    padding: 0 9px;
+    background: rgba(255,255,255,0.18);
+    border: 1.5px solid rgba(255,255,255,0.45);
+    border-radius: 9px;
+    font-family: 'VT323', monospace;
+    font-size: 12px;
+    color: #fff;
+    cursor: pointer;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .theme-toggle:hover { background: rgba(255,255,255,0.28); }
+  .theme-toggle .toggle-icon { font-size: 11px; }
+
+</style>
+</head>
+<body>
+
+<div class="window">
+
+  <!-- Title bar -->
+  <div class="title-bar">
+    <div class="win-btn close"></div>
+    <div class="win-btn min"></div>
+    <div class="win-btn max"></div>
+    <span class="title-bar-text">MY DIARY.exe</span>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><span class="toggle-icon">☀</span> LIGHT</button>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <button class="tb-btn" id="btnPrev" title="Previous page">◀ PREV</button>
+    <button class="tb-btn" id="btnNext" title="Next page">NEXT ▶</button>
+    <div class="tb-sep"></div>
+    <button class="tb-btn" onclick="triggerPhotoUpload()">+ PHOTO</button>
+    <div class="sticker-pick-wrap">
+      <button class="tb-btn" onclick="toggleMoodPicker()">+ STICKER</button>
+      <div class="mood-picker" id="moodPicker">
+        <div class="mood-option" style="background:#fde8d0;color:#8b4a1a" onclick="setMood('☀','feeling good','#fde8d0','#8b4a1a')">☀ feeling good</div>
+        <div class="mood-option" style="background:#d0e8fd;color:#1a4a8b" onclick="setMood('🌧','kind of sad','#d0e8fd','#1a4a8b')">🌧 kind of sad</div>
+        <div class="mood-option" style="background:#fdd0e8;color:#8b1a5a" onclick="setMood('💌','grateful','#fdd0e8','#8b1a5a')">💌 grateful</div>
+        <div class="mood-option" style="background:#d0fde0;color:#1a6b3a" onclick="setMood('🌿','calm','#d0fde0','#1a6b3a')">🌿 calm</div>
+        <div class="mood-option" style="background:#f0d0fd;color:#5a1a8b" onclick="setMood('✨','inspired','#f0d0fd','#5a1a8b')">✨ inspired</div>
+        <div class="mood-option" style="background:#fdfbd0;color:#6b6b1a" onclick="setMood('😮‍💨','just okay','#fdfbd0','#6b6b1a')">😮‍💨 just okay</div>
+        <div class="mood-option" style="background:#ffd0d0;color:#8b1a1a" onclick="setMood('🔥','chaotic','#ffd0d0','#8b1a1a')">🔥 chaotic</div>
+        <div class="mood-option" style="background:#d0d0fd;color:#1a1a8b" onclick="setMood('🌙','tired','#d0d0fd','#1a1a8b')">🌙 tired</div>
+      </div>
+    </div>
+    <div class="tb-sep"></div>
+    <button class="tb-btn">🔒 LOCK</button>
+    <span class="tb-date" id="tbDate"></span>
+  </div>
+
+  <!-- Main content -->
+  <div class="main">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-label">ENTRIES</div>
+      <div class="sidebar-entries">
+        <div class="entry-item active">
+          <span class="e-date">Apr 10</span>
+          <span class="e-sub">today</span>
+        </div>
+        <div class="entry-item">
+          <span class="e-date">Apr 9</span>
+        </div>
+        <div class="entry-item">
+          <span class="e-date">Apr 7</span>
+        </div>
+        <div class="entry-item">
+          <span class="e-date">Apr 4</span>
+        </div>
+        <div class="entry-item">
+          <span class="e-date">Apr 1</span>
+        </div>
+        <div class="sidebar-month">MARCH</div>
+        <div class="entry-item">
+          <span class="e-date">Mar 29</span>
+        </div>
+        <div class="entry-item">
+          <span class="e-date">Mar 25</span>
+        </div>
+        <div class="entry-item">
+          <span class="e-date">Mar 20</span>
+        </div>
+      </div>
+      <div class="sidebar-new">+ NEW</div>
+    </div>
+
+    <!-- Book area -->
+    <div class="book-area" id="bookArea">
+      <div class="book" id="book">
+
+        <!-- Ghost pages revealed behind the flying leaf -->
+        <div class="page-ghost ghost-left"  id="ghostLeft"></div>
+        <div class="page-ghost ghost-right" id="ghostRight"></div>
+
+        <!-- Flip container — holds the animated leaf and under-shadow -->
+        <div id="flipContainer">
+          <div class="flip-under-shadow" id="flipUnderShadow"></div>
+          <div class="flip-leaf" id="flipLeaf">
+            <div class="flip-leaf-front" id="flipLeafFront"></div>
+            <div class="flip-leaf-back"  id="flipLeafBack"></div>
+          </div>
+        </div>
+
+        <!-- LEFT PAGE -->
+        <div class="page page-left">
+          <div class="page-content">
+            <div class="entry-date" id="entryDateDisplay"></div>
+            <div class="entry-title">
+              <input
+                style="font-family:'Special Elite',serif;font-size:19px;color:var(--ink);background:transparent;border:none;outline:none;width:100%;line-height:24px;"
+                placeholder="give this day a title..."
+                value=""
+              />
+            </div>
+            <textarea
+              class="writing"
+              id="leftWriting"
+              rows="17"
+              placeholder="start writing... this page is yours."
+            ></textarea>
+          </div>
+          <div class="page-number">12</div>
+          <div class="flip-corner" id="cornerLeft" title="flip page"></div>
+        </div>
+
+        <!-- SPINE -->
+        <div class="spine">
+          <div class="spine-rings">
+        <div class="ring-wrap"><div class="ring"></div></div>
+        <div class="ring-wrap"><div class="ring"></div></div>
+        <div class="ring-wrap"><div class="ring"></div></div>
+        <div class="ring-wrap"><div class="ring"></div></div>
+        <div class="ring-wrap"><div class="ring"></div></div>
+        <div class="ring-wrap"><div class="ring"></div></div>
+        <div class="ring-wrap"><div class="ring"></div></div>
+        <div class="ring-wrap"><div class="ring"></div></div>
+        <div class="ring-wrap"><div class="ring"></div></div>
+        <div class="ring-wrap"><div class="ring"></div></div>
+        <div class="ring-wrap"><div class="ring"></div></div>
+        <div class="ring-wrap"><div class="ring"></div></div>
+        <div class="ring-wrap"><div class="ring"></div></div>
+        <div class="ring-wrap"><div class="ring"></div></div>
+        <div class="ring-wrap"><div class="ring"></div></div>
+        <div class="ring-wrap"><div class="ring"></div></div>
+        <div class="ring-wrap"><div class="ring"></div></div>
+        <div class="ring-wrap"><div class="ring"></div></div>
+        <div class="ring-wrap"><div class="ring"></div></div>
+        <div class="ring-wrap"><div class="ring"></div></div>
+        <div class="ring-wrap"><div class="ring"></div></div>
+        <div class="ring-wrap"><div class="ring"></div></div>
+          </div>
+        </div>
+
+        <!-- RIGHT PAGE -->
+        <div class="page page-right" id="rightPage">
+          <div class="page-content">
+            <textarea
+              class="writing"
+              id="rightWriting"
+              rows="25"
+              style="height:100%"
+              placeholder="...continue here."
+            ></textarea>
+          </div>
+
+          <!-- PHOTO ELEMENT — draggable -->
+          <div class="photo-element" id="photoEl" style="top:40px;right:20px;display:none">
+            <div class="drag-hint">DRAG TO MOVE</div>
+            <div class="photo-tape"></div>
+            <div class="photo-frame">
+              <div class="photo-inner" id="photoInner">
+                <div class="photo-placeholder" id="photoPlaceholder">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <path d="M21 15l-5-5L5 21"/>
+                  </svg>
+                  DROP PHOTO
+                </div>
+                <img id="photoImg" style="display:none;width:100%;height:100%;object-fit:cover;" alt="diary photo"/>
+              </div>
+              <div class="photo-caption">a moment from today</div>
+            </div>
+          </div>
+
+          <!-- MOOD STICKER — draggable -->
+          <div class="mood-sticker" id="moodEl" style="bottom:80px;left:30px;display:none">
+            <div class="drag-hint">DRAG TO MOVE</div>
+            <div class="mood-pill" id="moodPill">
+              <span id="moodEmoji">☀</span>
+              <span id="moodText">feeling good</span>
+            </div>
+          </div>
+
+          <div class="page-number">13</div>
+          <div class="flip-corner" id="cornerRight" title="flip page"></div>
+        </div>
+
+      </div><!-- /book -->
+    </div><!-- /book-area -->
+  </div><!-- /main -->
+
+  <!-- Status bar / music -->
+  <div class="status-bar">
+    <span class="status-page">page 12 of 48</span>
+
+    <div class="music-player">
+      <span class="music-note">♫</span>
+      <div class="play-btn" id="playBtn" onclick="togglePlay()">▶</div>
+      <span class="music-track" id="trackName">lofi study beats</span>
+      <div class="music-scrubber" id="scrubber" onclick="scrubTo(event)">
+        <div class="scrubber-fill" id="scrubFill"></div>
+      </div>
+      <span class="music-time" id="musicTime">1:12</span>
+      <div class="music-vol">
+        <span>VOL</span>
+        <div class="vol-slider"></div>
+      </div>
+    </div>
+
+    <span class="status-saved">● SAVED</span>
+  </div>
+
+</div><!-- /window -->
+
+<!-- Hidden file input -->
+<input type="file" id="fileInput" accept="image/*" style="display:none" onchange="loadPhoto(event)">
+
+<script>
+  // ── DATE ──
+  const now = new Date();
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const shortMonths = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  document.getElementById('tbDate').textContent =
+    `${days[now.getDay()].toUpperCase().slice(0,3)} · ${shortMonths[now.getMonth()]} ${now.getDate()} · ${now.getFullYear()}`;
+  document.getElementById('entryDateDisplay').textContent =
+    `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
+
+  // ── PHOTO UPLOAD ──
+  function triggerPhotoUpload() {
+    const photoEl = document.getElementById('photoEl');
+    if (photoEl.style.display === 'none') {
+      photoEl.style.display = 'block';
+      // if no photo yet, open file picker
+      if (document.getElementById('photoImg').style.display === 'none') {
+        document.getElementById('fileInput').click();
+      }
+    } else {
+      document.getElementById('fileInput').click();
+    }
+  }
+
+  function loadPhoto(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = document.getElementById('photoImg');
+      img.src = ev.target.result;
+      img.style.display = 'block';
+      document.getElementById('photoPlaceholder').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ── MOOD STICKER ──
+  function toggleMoodPicker() {
+    document.getElementById('moodPicker').classList.toggle('open');
+  }
+
+  function setMood(emoji, text, bg, color) {
+    const el = document.getElementById('moodEl');
+    el.style.display = 'block';
+    document.getElementById('moodEmoji').textContent = emoji;
+    document.getElementById('moodText').textContent = text;
+    const pill = document.getElementById('moodPill');
+    pill.style.background = bg;
+    pill.style.color = color;
+    pill.style.border = `1.5px solid ${color}44`;
+    document.getElementById('moodPicker').classList.remove('open');
+  }
+
+  // close picker on outside click
+  document.addEventListener('click', e => {
+    const picker = document.getElementById('moodPicker');
+    if (!e.target.closest('.sticker-pick-wrap')) picker.classList.remove('open');
+  });
+
+  // ── DRAG TO MOVE ──
+  function makeDraggable(el, container) {
+    let dragging = false, ox = 0, oy = 0, sx = 0, sy = 0;
+
+    el.addEventListener('mousedown', e => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      dragging = true;
+      const rect = el.getBoundingClientRect();
+      ox = e.clientX - rect.left;
+      oy = e.clientY - rect.top;
+      el.style.transition = 'none';
+      el.style.zIndex = 20;
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      const pRect = container.getBoundingClientRect();
+      let x = e.clientX - pRect.left - ox;
+      let y = e.clientY - pRect.top - oy;
+      x = Math.max(0, Math.min(x, pRect.width  - el.offsetWidth));
+      y = Math.max(0, Math.min(y, pRect.height - el.offsetHeight));
+      el.style.left   = x + 'px';
+      el.style.top    = y + 'px';
+      el.style.right  = 'auto';
+      el.style.bottom = 'auto';
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (dragging) { dragging = false; el.style.zIndex = 5; }
+    });
+  }
+
+  const rightPage = document.getElementById('rightPage');
+  makeDraggable(document.getElementById('photoEl'),  rightPage);
+  makeDraggable(document.getElementById('moodEl'),   rightPage);
+
+  // ── MUSIC PLAYER ──
+  let playing = false;
+  let progress = 35; // percent
+  let ticker;
+
+  const tracks = [
+    'lofi study beats',
+    'cafe piano · slow',
+    'rain on window',
+    'tape hiss & strings',
+    'midnight jazz',
+  ];
+  let trackIdx = 0;
+
+  function togglePlay() {
+    playing = !playing;
+    const btn = document.getElementById('playBtn');
+    btn.textContent = playing ? '⏸' : '▶';
+    if (playing) {
+      ticker = setInterval(() => {
+        progress = Math.min(100, progress + 0.08);
+        document.getElementById('scrubFill').style.width = progress + '%';
+        const totalSecs = 214;
+        const elapsed = Math.round(progress / 100 * totalSecs);
+        const m = Math.floor(elapsed / 60);
+        const s = String(elapsed % 60).padStart(2, '0');
+        document.getElementById('musicTime').textContent = `${m}:${s}`;
+        if (progress >= 100) {
+          trackIdx = (trackIdx + 1) % tracks.length;
+          document.getElementById('trackName').textContent = tracks[trackIdx];
+          progress = 0;
+        }
+      }, 300);
+    } else {
+      clearInterval(ticker);
+    }
+  }
+
+  function scrubTo(e) {
+    const rect = document.getElementById('scrubber').getBoundingClientRect();
+    progress = ((e.clientX - rect.left) / rect.width) * 100;
+    document.getElementById('scrubFill').style.width = progress + '%';
+  }
+
+  // ── AUTO-RESIZE TEXTAREAS ──
+  document.querySelectorAll('.writing').forEach(ta => {
+    ta.style.height = 'auto';
+    ta.addEventListener('input', function() {
+      // just let it fill naturally
+    });
+  });
+
+  // ── TOOLBAR ENTRY CLICKS ──
+  document.querySelectorAll('.entry-item').forEach(item => {
+    item.addEventListener('click', function() {
+      document.querySelectorAll('.entry-item').forEach(i => i.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // ── THEME TOGGLE ──
+  let isDark = false;
+  function toggleTheme() {
+    isDark = !isDark;
+    const btn = document.getElementById('themeToggle');
+    if (isDark) {
+      document.body.setAttribute('data-theme', 'dark');
+      btn.innerHTML = '<span class="toggle-icon">🌙</span> DARK';
+    } else {
+      document.body.removeAttribute('data-theme');
+      btn.innerHTML = '<span class="toggle-icon">☀</span> LIGHT';
+    }
+  }
+
+  // ── CLICK SOUND — mechanical keyboard clack (areen.xyz style) ──
+  let _audioCtx = null;
+  function getAudioCtx() {
+    if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // resume if suspended (browser autoplay policy)
+    if (_audioCtx.state === 'suspended') _audioCtx.resume();
+    return _audioCtx;
+  }
+
+  function playClickSound() {
+    try {
+      const ctx = getAudioCtx();
+      const t   = ctx.currentTime;
+      const master = ctx.createGain();
+      master.gain.setValueAtTime(0.55, t);
+      master.connect(ctx.destination);
+
+      // ── Layer 1: noise burst — the "clack" texture ──
+      // White noise filtered to mid-high band, very short
+      const bufSize = ctx.sampleRate * 0.04; // 40ms of noise
+      const noiseBuffer = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+      const data = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+
+      const noiseSource = ctx.createBufferSource();
+      noiseSource.buffer = noiseBuffer;
+
+      // bandpass around 3–8kHz — gives the crisp clack texture
+      const bp = ctx.createBiquadFilter();
+      bp.type            = 'bandpass';
+      bp.frequency.value = 4500;
+      bp.Q.value         = 0.8;
+
+      // highpass to strip low rumble
+      const hp = ctx.createBiquadFilter();
+      hp.type            = 'highpass';
+      hp.frequency.value = 2000;
+
+      const noiseGain = ctx.createGain();
+      // sharp transient: instant attack, very fast decay (8ms → gone by 25ms)
+      noiseGain.gain.setValueAtTime(0,    t);
+      noiseGain.gain.linearRampToValueAtTime(1,    t + 0.001);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.025);
+
+      noiseSource.connect(hp);
+      hp.connect(bp);
+      bp.connect(noiseGain);
+      noiseGain.connect(master);
+      noiseSource.start(t);
+      noiseSource.stop(t + 0.04);
+
+      // ── Layer 2: body thud — low percussive click (key bottom-out) ──
+      const thud = ctx.createOscillator();
+      thud.type = 'sine';
+      // pitch drops fast from ~180Hz → 60Hz — classic key thud
+      thud.frequency.setValueAtTime(180, t);
+      thud.frequency.exponentialRampToValueAtTime(60, t + 0.018);
+
+      const thudGain = ctx.createGain();
+      thudGain.gain.setValueAtTime(0,    t);
+      thudGain.gain.linearRampToValueAtTime(0.6,  t + 0.001);
+      thudGain.gain.exponentialRampToValueAtTime(0.001, t + 0.022);
+
+      thud.connect(thudGain);
+      thudGain.connect(master);
+      thud.start(t);
+      thud.stop(t + 0.025);
+
+      // ── Layer 3: ultra-short high tick — the "snap" of the switch ──
+      const tick = ctx.createOscillator();
+      tick.type = 'square';
+      tick.frequency.setValueAtTime(1800, t);
+      tick.frequency.exponentialRampToValueAtTime(800, t + 0.006);
+
+      const tickGain = ctx.createGain();
+      tickGain.gain.setValueAtTime(0,    t);
+      tickGain.gain.linearRampToValueAtTime(0.12, t + 0.0005);
+      tickGain.gain.exponentialRampToValueAtTime(0.001, t + 0.008);
+
+      tick.connect(tickGain);
+      tickGain.connect(master);
+      tick.start(t);
+      tick.stop(t + 0.01);
+
+    } catch(e) {
+      // silently fail if audio unavailable
+    }
+  }
+
+  // Attach click sound to all interactive elements
+  // Guard: don't fire if the user was dragging (mousedown → mousemove → mouseup = drag, not click)
+  let _wasDragging = false;
+  document.addEventListener('mousemove', () => { if (_mouseDown) _wasDragging = true; });
+  let _mouseDown = false;
+  document.addEventListener('mousedown', () => { _mouseDown = true; _wasDragging = false; });
+  document.addEventListener('mouseup',   () => { _mouseDown = false; });
+
+  document.addEventListener('click', function(e) {
+    if (_wasDragging) { _wasDragging = false; return; }
+    // flip-corner has its own sound — exclude from generic click
+    const clickableClasses = ['tb-btn', 'sidebar-new', 'play-btn', 'mood-option', 'win-btn', 'theme-toggle', 'mood-pill', 'entry-item'];
+    if (clickableClasses.some(cls => e.target.closest('.' + cls))) {
+      playClickSound();
+    }
+  });
+
+  // ══════════════════════════════════════════════════════
+  // PAGE FLIP — smooth curl animation (no sound)
+  // ══════════════════════════════════════════════════════
+
+  const pageLeft        = document.querySelector('.page-left');
+  const pageRight       = document.getElementById('rightPage');
+  const ghostLeft       = document.getElementById('ghostLeft');
+  const ghostRight      = document.getElementById('ghostRight');
+  const flipContainer   = document.getElementById('flipContainer');
+  const flipLeaf        = document.getElementById('flipLeaf');
+  const flipLeafFront   = document.getElementById('flipLeafFront');
+  const flipUnderShadow = document.getElementById('flipUnderShadow');
+
+  let isFlipping = false;
+
+  // Ease function: smooth start, slight overshoot settle at end
+  // This gives the page a natural "flop" feeling as it lands
+  function easeFlip(t) {
+    // cubic ease-in for first 60%, then a gentle ease-out with tiny bounce
+    if (t < 0.6) {
+      return 0.5 * Math.pow(t / 0.6, 2) * (t / 0.6); // ease-in cubic scaled
+    }
+    const t2 = (t - 0.6) / 0.4;
+    // ease-out with very subtle overshoot: lands at 1.0 cleanly
+    return 0.5 + 0.5 * (1 - Math.pow(1 - t2, 2.4));
+  }
+
+  function animateFlip(direction) {
+    if (isFlipping) return;
+    isFlipping = true;
+
+    const isNext = direction === 'next';
+    const DURATION = 580; // ms — long enough to feel physical, short enough for frequent use
+
+    // ── Determine geometry ──
+    // The book rect lets us size the leaf correctly
+    const bookEl   = document.getElementById('book');
+    const bookRect = bookEl.getBoundingClientRect();
+    const spineW   = document.querySelector('.spine').offsetWidth;
+    const pageW    = (bookRect.width - spineW) / 2;
+
+    // ── Which page is the source (hides) and destination ──
+    const sourcePage = isNext ? pageLeft : pageRight;
+    const destPage   = isNext ? pageRight : pageLeft;
+
+    // Show ghost: the page that will be "underneath" after the flip
+    if (isNext) {
+      ghostRight.style.display = 'block';
+      ghostLeft.style.display  = 'none';
+    } else {
+      ghostLeft.style.display  = 'block';
+      ghostRight.style.display = 'none';
+    }
+
+    // ── Position the flip leaf exactly over the source page ──
+    // The leaf starts on top of the source page and rotates to the other side
+    flipLeaf.style.width  = pageW + 'px';
+    flipLeaf.style.top    = '0';
+    flipLeaf.style.bottom = '0';
+
+    if (isNext) {
+      // Leaf starts on the LEFT page, rotates to cover RIGHT page
+      flipLeaf.style.left  = '0';
+      flipLeaf.style.right = 'auto';
+      flipLeaf.style.transformOrigin = 'right center';
+      // Front face gradient darkens toward the fold (right edge)
+      flipLeafFront.style.setProperty('--fold-gradient',
+        'linear-gradient(to right, rgba(0,0,0,0) 70%, rgba(0,0,0,0.15) 100%)');
+    } else {
+      // Leaf starts on the RIGHT page, rotates to cover LEFT page
+      flipLeaf.style.left  = 'auto';
+      flipLeaf.style.right = '0';
+      flipLeaf.style.transformOrigin = 'left center';
+      flipLeafFront.style.setProperty('--fold-gradient',
+        'linear-gradient(to left, rgba(0,0,0,0) 70%, rgba(0,0,0,0.15) 100%)');
+    }
+
+    // Under-shadow sits on the destination page, grows as leaf approaches
+    flipUnderShadow.style.top    = '0';
+    flipUnderShadow.style.bottom = '0';
+    flipUnderShadow.style.width  = pageW + 'px';
+    if (isNext) {
+      flipUnderShadow.style.left  = pageW + spineW + 'px';
+      flipUnderShadow.style.right = 'auto';
+      flipUnderShadow.style.background =
+        'linear-gradient(to right, rgba(0,0,0,0.22) 0%, rgba(0,0,0,0.04) 60%, transparent 100%)';
+    } else {
+      flipUnderShadow.style.left  = '0';
+      flipUnderShadow.style.right = 'auto';
+      flipUnderShadow.style.background =
+        'linear-gradient(to left, rgba(0,0,0,0.22) 0%, rgba(0,0,0,0.04) 60%, transparent 100%)';
+    }
+
+    // Show everything
+    flipContainer.style.display = 'block';
+    sourcePage.style.opacity    = '0'; // hide real source page under the leaf
+    flipLeaf.style.transform    = 'rotateY(0deg)';
+    flipUnderShadow.style.opacity = '0';
+
+    const startTime = performance.now();
+
+    function tick(now) {
+      const raw      = Math.min((now - startTime) / DURATION, 1);
+      const progress = easeFlip(raw);
+
+      // rotateY: 0° → -180° (next) or 0° → 180° (prev)
+      const angle = isNext
+        ? -(progress * 180)
+        :  (progress * 180);
+
+      flipLeaf.style.transform = `rotateY(${angle}deg)`;
+
+      // ── Fold shadow on the leaf front ──
+      // As the page lifts (0°→90°), the fold darkens toward the spine edge.
+      // After 90° the back face is showing — front shadow irrelevant.
+      const lift = Math.min(progress * 2, 1); // 0→1 over first half
+      const foldOpacity = lift * 0.55;
+      flipLeafFront.style.backgroundImage =
+        isNext
+          ? `linear-gradient(to right, rgba(0,0,0,0) 55%, rgba(0,0,0,${foldOpacity}) 100%)`
+          : `linear-gradient(to left,  rgba(0,0,0,0) 55%, rgba(0,0,0,${foldOpacity}) 100%)`;
+
+      // ── Under-shadow on destination page ──
+      // Grows as leaf travels over it (peaks at ~90°), fades as leaf lands
+      const shadowIntensity = progress < 0.5
+        ? progress * 2           // 0→1 in first half
+        : (1 - progress) * 2;    // 1→0 in second half
+      flipUnderShadow.style.opacity = shadowIntensity * 0.8;
+
+      // ── Subtle Y-arc: page rises slightly in the middle ──
+      // translateY peaks at mid-flip, giving a natural arc
+      const arc = Math.sin(progress * Math.PI) * 8;
+      flipLeaf.style.transform = `rotateY(${angle}deg) translateY(${-arc}px)`;
+
+      if (raw < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        // ── Land: clean up ──
+        flipContainer.style.display   = 'none';
+        flipLeaf.style.transform      = '';
+        flipLeafFront.style.backgroundImage = '';
+        flipUnderShadow.style.opacity = '0';
+        ghostLeft.style.display       = 'none';
+        ghostRight.style.display      = 'none';
+        sourcePage.style.opacity      = ''; // restore
+        isFlipping = false;
+
+        // Update page numbers
+        const leftNum  = document.querySelector('.page-left  .page-number');
+        const rightNum = document.querySelector('.page-right .page-number');
+        const cur = parseInt(leftNum.textContent) || 12;
+        if (isNext) {
+          leftNum.textContent  = cur + 2;
+          rightNum.textContent = cur + 3;
+        } else {
+          leftNum.textContent  = Math.max(1, cur - 2);
+          rightNum.textContent = Math.max(2, cur - 1);
+        }
+      }
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  // Wire up all flip triggers
+  document.getElementById('btnNext').addEventListener('click',    () => animateFlip('next'));
+  document.getElementById('btnPrev').addEventListener('click',    () => animateFlip('prev'));
+  document.getElementById('cornerLeft').addEventListener('click',  () => animateFlip('next'));
+  document.getElementById('cornerRight').addEventListener('click', () => animateFlip('prev'));
+
+</script>
+
+</body>
+</html>

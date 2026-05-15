@@ -48,9 +48,31 @@ export function seedEntries(entries) {
   const today = todayKey();
   const withToday = entries[today] ? entries : { ...entries, [today]: blankEntry(today) };
   const hasPastEntries = Object.keys(withToday).some((key) => key < today);
-  if (hasPastEntries) return withToday;
+  if (hasPastEntries) {
+    // If the user already has past entries, still add demo April entries if missing.
+    try {
+      const now = new Date();
+      const year = now.getFullYear();
+      const aprilDays = [5, 12, 25];
+      aprilDays.forEach((d) => {
+        const iso = dateKey(new Date(year, 3, d));
+        if (!withToday[iso]) {
+          withToday[iso] = {
+            ...blankEntry(iso),
+            date: iso,
+            title: `April ${d} — a note`,
+            leftText: `A small entry from April ${d}. Felt like spring.`,
+            rightText: `Remembering the walk and the light.`,
+          };
+        }
+      });
+    } catch (e) {
+      // noop
+    }
+    return withToday;
+  }
 
-  return [
+  const seeded = [
     {
       offset: 1,
       title: 'a slow kind of tuesday',
@@ -86,4 +108,28 @@ export function seedEntries(entries) {
     delete acc[iso].offset;
     return acc;
   }, withToday);
+
+  // Add a few sample entries in April to demonstrate the accordion grouping.
+  // Add them into the seeded result so they appear regardless of existing entries.
+  try {
+    const now = new Date();
+    const year = now.getFullYear();
+    const aprilDays = [5, 12, 25];
+    aprilDays.forEach((d) => {
+      const iso = dateKey(new Date(year, 3, d)); // month index 3 = April
+      if (!seeded[iso]) {
+        seeded[iso] = {
+          ...blankEntry(iso),
+          date: iso,
+          title: `April ${d} — a note`,
+          leftText: `A small entry from April ${d}. Felt like spring.`,
+          rightText: `Remembering the walk and the light.`,
+        };
+      }
+    });
+  } catch (e) {
+    // noop — seeding should not throw in normal environments
+  }
+
+  return seeded;
 }

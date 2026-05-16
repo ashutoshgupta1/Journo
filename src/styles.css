@@ -313,9 +313,69 @@ button {
   padding: 7px 8px 2px;
   border-top: 1px dashed rgba(0, 0, 0, 0.4);
   color: var(--pixel-border);
-  font-size: 11px;
+  font-size: 17px;
+  font-weight: 700;
   letter-spacing: 1px;
   opacity: 0.5;
+}
+
+/* Accordion styles for sidebar months */
+.month-section {
+  margin-bottom: 6px;
+}
+
+.month-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: color-mix(in srgb, var(--paper) 6%, transparent);
+  border-radius: 6px;
+  border: 1px solid transparent;
+  color: var(--pixel-border);
+  font-size: 13px;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.month-header:hover {
+  background: color-mix(in srgb, var(--paper) 12%, transparent);
+  border-color: color-mix(in srgb, var(--pixel-border) 8%, transparent);
+}
+
+.month-label {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--ink-faint);
+}
+.month-chevron {
+  display: inline-block;
+  opacity: 0.95;
+  transition: transform 180ms ease, opacity 120ms ease, color 160ms ease;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--ink-faint);
+  transform: rotate(0deg);
+  transform-origin: 50% 50%;
+  margin-left: 6px;
+}
+.month-chevron.open {
+  transform: rotate(90deg);
+  opacity: 1;
+  color: var(--ink-faint);
+}
+
+.month-entries.collapsed { display: none; }
+.month-entries.open { display: block; }
+
+/* visually connect header and entries */
+.month-entries {
+  margin-top: 6px;
+  margin-left: 6px;
+  padding-left: 8px;
+  border-left: 2px solid color-mix(in srgb, var(--pixel-border) 6%, transparent);
+  border-radius: 0 6px 6px 0;
 }
 
 .entry-item {
@@ -331,7 +391,12 @@ button {
   transition: transform 0.14s ease, background 0.14s ease;
 }
 
-.entry-item:hover,
+.entry-item:hover {
+  background: color-mix(in srgb, var(--chrome-btn) 36%, transparent);
+  border-color: color-mix(in srgb, var(--pixel-border) 12%, transparent);
+  transform: translateX(1px);
+}
+
 .entry-item.active {
   background: var(--chrome-btn);
   border-color: var(--pixel-border);
@@ -345,7 +410,7 @@ button {
 
 .e-date {
   color: var(--accent);
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .e-sub {
@@ -359,7 +424,6 @@ button {
   padding: 1px 3px;
 }
 
-.entry-item:hover .e-del,
 .entry-item.active .e-del {
   display: inline-flex;
 }
@@ -421,7 +485,7 @@ button {
   height: 100%;
   container-type: size;
   min-width: 0;
-  border: 1px solid #000;
+  border: 2px solid #000;
   border-radius: 0;
   background:
     linear-gradient(90deg, rgba(255, 255, 255, 0.18), transparent 24%, transparent 76%, rgba(0, 0, 0, 0.015)),
@@ -433,12 +497,12 @@ button {
 
 .page-left {
   border-right: 0.5px solid color-mix(in srgb, var(--paper-line) 52%, transparent);
-  border-radius: 5px 0 0 5px;
+  border-radius: 8px 0 0 8px;
 }
 
 .page-right {
   border-left: 0.5px solid color-mix(in srgb, var(--paper-line) 52%, transparent);
-  border-radius: 0 5px 5px 0;
+  border-radius: 0 8px 8px 0;
   background:
     linear-gradient(90deg, rgba(0, 0, 0, 0.015), transparent 24%, transparent 78%, rgba(255, 255, 255, 0.18)),
     var(--paper);
@@ -505,19 +569,21 @@ button {
   margin-bottom: clamp(4px, 1cqh, 7px);
   color: var(--ink-muted);
   font-family: "Special Elite", serif;
-  font-size: clamp(8px, 1.7cqh, 11px);
+  font-size: clamp(10px, 1.9cqh, 13px);
   letter-spacing: 2px;
   line-height: clamp(18px, 3.35cqh, 25px);
   text-transform: uppercase;
 }
 
 .entry-title {
-  max-width: 16ch;
+  max-width: 19ch;
   margin-bottom: clamp(8px, 2cqh, 13px);
   color: var(--ink);
   font-family: "Special Elite", serif;
-  font-size: clamp(17px, 4.4cqh, 27px);
-  line-height: 1.12;
+  font-size: clamp(18px, 4.6cqh, 30px);
+  line-height: 1.05;
+  font-weight: 700;
+  text-rendering: optimizeLegibility;
 }
 
 .entry-title input {
@@ -527,6 +593,14 @@ button {
   border: 0;
   outline: 0;
   font: inherit;
+  font-weight: 700;
+  -webkit-font-smoothing: antialiased;
+  caret-color: var(--accent);
+}
+
+.entry-title input::placeholder {
+  color: var(--ink-faint);
+  opacity: 1;
 }
 
 .writing {
@@ -725,6 +799,7 @@ button {
   color: var(--pixel-border);
   font-size: 13px;
   letter-spacing: 0.5px;
+  position: relative;
 }
 
 .status-page,
@@ -737,10 +812,14 @@ button {
 }
 
 .music-player {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 0 auto;
+  max-width: calc(100% - 200px);
 }
 
 .play-btn {
@@ -751,11 +830,23 @@ button {
   font-size: 10px;
 }
 
+.play-circle:active { transform: translateY(1px); }
+
+.play-symbol {
+  line-height: 1;
+}
+
 .music-track {
   max-width: 150px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.eq {
+  display: flex;
+  align-items: end;
+  gap: 4px;
 }
 
 .music-scrubber {
@@ -785,6 +876,32 @@ button {
   height: 4px;
   border: 1px solid rgba(0, 0, 0, 0.4);
   background: rgba(103, 148, 153, 0.25);
+}
+
+.eq .b1 { animation-delay: 0ms; }
+.eq .b2 { animation-delay: 120ms; height: 12px; }
+.eq .b3 { animation-delay: 240ms; height: 16px; }
+
+@keyframes eqPulse {
+  0% { transform: scaleY(0.6); opacity: 0.8; }
+  50% { transform: scaleY(1.6); opacity: 1; }
+  100% { transform: scaleY(0.6); opacity: 0.8; }
+}
+
+@media (max-width: 980px) {
+  .music-player {
+    width: calc(100% - 96px);
+    padding: 5px 12px;
+    height: 22px;
+  }
+
+  .music-track { font-size: 12px; }
+  .play-circle { width: 22px; height: 22px; min-width: 22px; font-size: 11px; }
+}
+
+@media (max-width: 640px) {
+  .music-player { width: calc(100% - 56px); padding: 4px 10px; }
+  .music-track { max-width: calc(100% - 110px); }
 }
 
 .modal-overlay {

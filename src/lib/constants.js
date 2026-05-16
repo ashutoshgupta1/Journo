@@ -23,13 +23,13 @@ export const months = [
   'November',
   'December',
 ];
-export const shortMonths = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+export const shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export const backdrops = [
-  { id: 'plaid', label: 'PLAID' },
-  { id: 'greenroom', label: 'GREEN' },
-  { id: 'rose', label: 'ROSE' },
-  { id: 'midnight', label: 'NIGHT' },
+  { id: 'plaid', label: 'Plaid' },
+  { id: 'greenroom', label: 'Green' },
+  { id: 'rose', label: 'Rose' },
+  { id: 'midnight', label: 'Night' },
 ];
 
 export const moods = [

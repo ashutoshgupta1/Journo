@@ -34,7 +34,7 @@ export function Sidebar({ currentDate, entries, onCreate, onDelete, onSelect }) 
 
   return (
     <aside className="sidebar">
-      <div className="sidebar-label">ENTRIES</div>
+      <div className="sidebar-label">Entries</div>
       <div className="sidebar-entries">
         {monthKeys.map((month) => (
           <div className="month-section" key={month}>
@@ -84,9 +84,14 @@ export function Sidebar({ currentDate, entries, onCreate, onDelete, onSelect }) 
           </div>
         ))}
       </div>
+      <div className="sidebar-greeting">
+        <div className="greeting-kicker">Hello</div>
+        <div className="greeting-name">Ashutosh</div>
+        <blockquote>“Write a little truth, and the day remembers you back.”</blockquote>
+      </div>
       {!entries[todayKey()] && (
         <button className="sidebar-new" type="button" onClick={onCreate}>
-          + NEW
+          + New
         </button>
       )}
     </aside>

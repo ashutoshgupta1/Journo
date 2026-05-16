@@ -14,7 +14,7 @@ export function LockScreen({ error, password, title, onChange, onSubmit }) {
       <div className="lock-cover-spine" />
       <div className="lock-screen-inner">
         <div className="lock-screen-icon">🔒</div>
-        <div className="lock-screen-title">THIS DIARY IS LOCKED</div>
+        <div className="lock-screen-title">This Diary Is Locked</div>
         <div className="lock-screen-sub">enter your password to open it.</div>
         <div className="lock-screen-pw-row">
           <input
@@ -27,11 +27,11 @@ export function LockScreen({ error, password, title, onChange, onSubmit }) {
             onKeyDown={(event) => event.key === 'Enter' && onSubmit()}
           />
           <button className="lock-screen-btn" type="button" onClick={onSubmit}>
-            OPEN →
+            Open →
           </button>
         </div>
         <div className="lock-screen-err">{error}</div>
-        <div className="lock-screen-hint">press Enter or click OPEN to unlock</div>
+        <div className="lock-screen-hint">Press Enter or click Open to unlock</div>
       </div>
     </div>
   );

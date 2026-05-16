@@ -11,7 +11,7 @@ function Photo({ pageRef, photo, position, side, onMove }) {
 
   return (
     <div className="photo-element" ref={ref} style={{ left: position?.left, top: position?.top }}>
-      <div className="drag-hint">DRAG TO MOVE</div>
+      <div className="drag-hint">Drag to move</div>
       <div className="photo-tape" />
       <div className="photo-frame">
         <div className="photo-inner">
@@ -30,7 +30,7 @@ function MoodSticker({ mood, pageRef, position, side, onMove }) {
 
   return (
     <div className="mood-sticker" ref={ref} style={{ left: position?.left, top: position?.top }}>
-      <div className="drag-hint">DRAG TO MOVE</div>
+      <div className="drag-hint">Drag to move</div>
       <div className="mood-pill" style={{ background: mood.bg, color: mood.color, borderColor: `${mood.color}44` }}>
         <span>{mood.emoji}</span>
         <span>{mood.text}</span>

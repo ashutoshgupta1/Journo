@@ -1,14 +1,29 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { formatToolbarDate } from '../lib/date.js';
 
 export function TitleBar({ title, theme, onTitleChange, onThemeToggle }) {
   const [draft, setDraft] = useState(title);
   const [isEditing, setIsEditing] = useState(false);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (!isEditing) return;
+    setDraft(title);
+    requestAnimationFrame(() => {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    });
+  }, [isEditing, title]);
 
   function commit() {
     const next = draft.trim() || title;
     onTitleChange(next);
     setDraft(next);
+    setIsEditing(false);
+  }
+
+  function cancel() {
+    setDraft(title);
     setIsEditing(false);
   }
 
@@ -28,21 +43,21 @@ export function TitleBar({ title, theme, onTitleChange, onThemeToggle }) {
       {isEditing && (
         <input
           className="title-bar-input"
-          autoFocus
+          ref={inputRef}
           maxLength={40}
           value={draft}
           onBlur={commit}
           onChange={(event) => setDraft(event.target.value)}
           onKeyDown={(event) => {
             if (event.key === 'Enter') commit();
-            if (event.key === 'Escape') setIsEditing(false);
+            if (event.key === 'Escape') cancel();
           }}
         />
       )}
 
       <button className="theme-toggle" type="button" onClick={onThemeToggle}>
         <span className="toggle-icon">{theme === 'dark' ? '🌙' : '☀'}</span>
-        {theme === 'dark' ? 'DARK' : 'LIGHT'}
+        {theme === 'dark' ? 'Dark' : 'Light'}
       </button>
     </header>
   );
@@ -62,7 +77,7 @@ export function Toolbar({
     <nav className="toolbar">
       <div className="pick-wrap">
         <button className="tb-btn" type="button" onClick={() => onPicker(activePicker === 'photo' ? null : 'photo')}>
-          + PHOTO
+          + Photo
         </button>
         {activePicker === 'photo' && (
           <div className="picker photo-picker">
@@ -77,13 +92,13 @@ export function Toolbar({
 
       <div className="pick-wrap">
         <button className="tb-btn" type="button" onClick={() => onPicker(activePicker === 'mood' ? null : 'mood')}>
-          + STICKER
+          + Sticker
         </button>
         {activePicker === 'mood' && (
           <div className="picker mood-picker">
             {['L', 'R'].map((side) => (
               <div className="picker-section" key={side}>
-                <div className="picker-label">{side === 'L' ? 'LEFT PAGE' : 'RIGHT PAGE'}</div>
+                <div className="picker-label">{side === 'L' ? 'Left Page' : 'Right Page'}</div>
                 {moods.map((mood) => (
                   <button
                     className="picker-option"
@@ -103,7 +118,7 @@ export function Toolbar({
 
       <span className="tb-sep" />
       <button className="tb-btn" type="button" onClick={onLock}>
-        🔒 LOCK
+        🔒 Lock
       </button>
       <button className="tb-btn bg-toggle" type="button" onClick={onBackdrop}>
         ▧ {backgroundLabel}
@@ -138,9 +153,9 @@ export function StatusBar({ isPlaying, pageText, progress, trackName, onScrub, o
           <span className="scrubber-fill" style={{ width: `${progress * 100}%` }} />
         </button>
         <span className="music-time">{time}</span>
-        <span className="music-vol">VOL <span className="vol-slider" /></span>
+        <span className="music-vol">Vol <span className="vol-slider" /></span>
       </div>
-      <span className="status-saved">● SAVED</span>
+      <span className="status-saved">● Saved</span>
     </footer>
   );
 }

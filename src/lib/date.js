@@ -22,7 +22,7 @@ export function formatLong(iso) {
 }
 
 export function formatToolbarDate(date = new Date()) {
-  return `${days[date.getDay()].slice(0, 3).toUpperCase()} · ${shortMonths[date.getMonth()]} ${date.getDate()} · ${date.getFullYear()}`;
+  return `${days[date.getDay()].slice(0, 3)} · ${shortMonths[date.getMonth()]} ${date.getDate()} · ${date.getFullYear()}`;
 }
 
 export function monthLabel(iso) {

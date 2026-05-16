@@ -16,7 +16,7 @@ export default function App() {
   const flipTimer = useRef(null);
   const [entries, setEntries] = useState(() => seedEntries(loadEntries()));
   const [currentDate, setCurrentDate] = useState(todayKey());
-  const [title, setTitle] = useLocalStorageState(STORAGE_KEYS.title, 'MY DIARY.exe');
+  const [title, setTitle] = useLocalStorageState(STORAGE_KEYS.title, 'My Diary.exe');
   const [theme, setTheme] = useLocalStorageState(STORAGE_KEYS.theme, 'light');
   const [backdropId, setBackdropId] = useLocalStorageState(STORAGE_KEYS.background, 'plaid');
   const [activePicker, setActivePicker] = useState(null);
@@ -45,6 +45,10 @@ export default function App() {
   useEffect(() => {
     document.title = title;
   }, [title]);
+
+  useEffect(() => {
+    if (title === 'MY DIARY.exe') setTitle('My Diary.exe');
+  }, [setTitle, title]);
 
   useEffect(() => {
     document.body.dataset.bg = backdrop.id;
@@ -145,16 +149,16 @@ export default function App() {
   function submitLock() {
     if (lockModal === 'set') {
       if (lockDraft.password.length < 4) {
-        setLockError('MIN 4 CHARACTERS');
+        setLockError('Min 4 characters');
         return;
       }
       if (lockDraft.password !== lockDraft.confirmPassword) {
-        setLockError("PASSWORDS DON'T MATCH");
+        setLockError("Passwords don't match");
         return;
       }
       localStorage.setItem(STORAGE_KEYS.lock, btoa(lockDraft.password));
     } else if (btoa(lockDraft.password) !== localStorage.getItem(STORAGE_KEYS.lock)) {
-      setLockError('WRONG PASSWORD');
+      setLockError('Wrong password');
       return;
     }
     sessionStorage.setItem(STORAGE_KEYS.lockedSession, '1');
@@ -164,7 +168,7 @@ export default function App() {
 
   function submitUnlock() {
     if (btoa(unlockDraft) !== localStorage.getItem(STORAGE_KEYS.lock)) {
-      setUnlockError('WRONG PASSWORD — TRY AGAIN');
+      setUnlockError('Wrong password — try again');
       setUnlockDraft('');
       return;
     }

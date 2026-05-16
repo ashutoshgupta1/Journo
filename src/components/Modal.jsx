@@ -16,14 +16,14 @@ export function Modal({ children, title, onClose }) {
 
 export function ConfirmDeleteModal({ label, onCancel, onConfirm }) {
   return (
-    <Modal title="DELETE ENTRY" onClose={onCancel}>
+    <Modal title="Delete Entry" onClose={onCancel}>
       <div className="modal-label">Delete "{label}"? This cannot be undone.</div>
       <div className="modal-row">
         <button className="modal-btn" type="button" onClick={onCancel}>
-          CANCEL
+          Cancel
         </button>
         <button className="modal-btn primary danger" type="button" onClick={onConfirm}>
-          DELETE
+          Delete
         </button>
       </div>
     </Modal>
@@ -33,8 +33,8 @@ export function ConfirmDeleteModal({ label, onCancel, onConfirm }) {
 export function PasswordModal({ error, mode, onCancel, onChange, onConfirm, password, confirmPassword }) {
   const isSetMode = mode === 'set';
   return (
-    <Modal title={isSetMode ? 'SET PASSWORD' : 'LOCK DIARY'} onClose={onCancel}>
-      <div className="modal-label">{isSetMode ? 'CREATE A PASSWORD TO LOCK YOUR DIARY' : 'ENTER PASSWORD TO LOCK'}</div>
+    <Modal title={isSetMode ? 'Set Password' : 'Lock Diary'} onClose={onCancel}>
+      <div className="modal-label">{isSetMode ? 'Create a password to lock your diary' : 'Enter password to lock'}</div>
       <input
         className="modal-input"
         type="password"
@@ -48,7 +48,7 @@ export function PasswordModal({ error, mode, onCancel, onChange, onConfirm, pass
         <input
           className="modal-input"
           type="password"
-          placeholder="CONFIRM"
+          placeholder="Confirm"
           maxLength={32}
           value={confirmPassword}
           onChange={(event) => onChange({ confirmPassword: event.target.value })}
@@ -58,10 +58,10 @@ export function PasswordModal({ error, mode, onCancel, onChange, onConfirm, pass
       <div className="modal-err">{error}</div>
       <div className="modal-row">
         <button className="modal-btn" type="button" onClick={onCancel}>
-          CANCEL
+          Cancel
         </button>
         <button className="modal-btn primary" type="button" onClick={onConfirm}>
-          LOCK
+          Lock
         </button>
       </div>
     </Modal>
